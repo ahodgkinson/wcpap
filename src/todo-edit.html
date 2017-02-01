@@ -1,0 +1,191 @@
+<!-- todo-edit -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../bower_components/paper-date-picker/paper-date-picker.html">
+
+<link rel="import" href="shared-styles.html">
+
+<link rel="import" href="todo-data.html">
+<link rel="import" href="record-select.html">
+
+<!--
+    Example data:
+
+    {
+      "id":4,
+      "name":"Build a Metro Station",
+      "description":"Build an underground metro station in the main square",
+      "responsible":"Dan Digger",
+      "project": "metro",
+      "due_date":"2017-03-02",
+      "status":"open"
+    }
+-->
+
+<dom-module id="todo-edit">
+
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      h2 {
+        font-size: 14px;
+        color: black;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      p {
+        margin-top: 2px;
+      }
+
+      paper-dropdown-menu, paper-listbox {
+        width: 220px;
+      }
+      paper-dropdown-menu {
+        display: block;
+      }
+
+    </style>
+
+
+    <app-route route="[[route]]" pattern="/:id" data="{{routeData}}"></app-route>
+
+    <todo-data task-id="[[routeData.id]]" task="{{originalTask}}"></todo-data>
+
+    <todo-data
+        task-id="[[routeData.id]]" task="{{task}}"
+        projects="{{projects}}"
+        statuses="{{statuses}}"
+    ></todo-data>
+
+    <div id="mycard" class="card">
+      <h1>Edit Task [[routeData.id]]</h1>
+      <form type="get" action="/" id="todoItemForm">
+
+        <paper-input name="name" label="Task Name" value="{{task.name}}"></paper-input>
+        <input type="hidden" name="name" value="{{task.name}}">
+
+        <paper-input name="description" label="Description" value="{{task.description}}" required auto-validate></paper-input>
+        <input type="hidden" name="description" value="{{task.description}}">
+
+        <paper-input name="responsible" label="Responsible" value="{{task.responsible}}" required auto-validate></paper-input>
+        <input type="hidden" name="responsible" value="{{task.responsible}}">
+
+        <record-select as-select records="[[projects]]" id="{{task.project}}" label="Project" field-name="project"></record-select>
+        <input type="hidden" name="project" value="{{task.project}}">
+
+        <record-select as-select records="[[statuses]]" id="{{task.status}}"  label="Status" field-name="status"></record-select>
+        <input type="hidden" name="status" value="{{task.status}}">
+
+        <!-- Due Date -->
+        <!-- <paper-date-picker date="April 1, 2015" id="picker"></paper-date-picker> -->
+
+        <!-- Due Date -->
+        <!--
+        <paper-dialog id="dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
+          <paper-date-picker id="picker" date="{{mydate}}"></paper-date-picker>
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm>OK</paper-button>
+          </div>
+        </paper-dialog>
+        -->
+        <h2>Due date</h2>
+        <p>{{task.due_date}}</p>
+
+        <paper-button on-tap="_submit" raised>Save</paper-button>
+        <paper-button on-tap="_reset" raised>Reset</paper-button>
+      </form>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'todo-edit',
+
+      properties: {
+        routeData: Object,
+        task: {
+          type: Object,
+          notify: true
+        },
+        originalTask: Object,
+        projects: Array,
+        statuses: Array,
+        mydate: {
+          type: String,
+          value: "1 April, 2015"
+        }
+      },
+
+      _reset: function(e) {
+        console.log("todo-edit._reset");
+
+        var newTask = {};
+        for (var field in this.originalTask) {
+          if (field != 'id') {
+            console.log("todo-edit._reset: field: "+field+": \""+this.task[field]+"\" --> \""+this.originalTask[field]+"\"");
+            newTask[field] = this.originalTask[field];
+          } else { // Never change the task's id
+            newTask[field] = this.task[field];
+          }
+        }
+        this.set('task', newTask);
+      },
+
+      _submit: function(e) {
+        console.log("todo-edit._submit: id: "+this.task.id);
+        if (this._validateForm()) {
+          console.log("todo-edit._submit: form OK");
+        } else {
+          console.log("todo-edit._submit: form INVALID");
+        }
+      },
+
+      _validateForm() { // Return true if form passes validation
+        var form = this.$.todoItemForm;
+        var firstInvalid = false;
+
+        for (var el, i = 0; el = form.elements[i], i < form.elements.length; i++) {
+
+          console.log("todo-edit._validateForm: i="+i+", name=\""+el.name+"\", value=\""+el.value+"\"");
+
+/*
+          if (el.checkValidity()) {
+            el.removeAttribute('aria-invalid');
+          } else {
+            if (!firstInvalid) {
+              // announce error message
+              if (el.nextElementSibling) {
+                this.fire('announce', el.nextElementSibling.getAttribute('error-message'));
+              }
+              if (el.scrollIntoViewIfNeeded) {
+                // safari, chrome
+                el.scrollIntoViewIfNeeded();
+              } else {
+                // firefox, edge, ie
+                el.scrollIntoView(false);
+              }
+              el.focus();
+              firstInvalid = true;
+            }
+            el.setAttribute('aria-invalid', 'true');
+          }
+*/
+        }
+
+        return !firstInvalid;
+
+
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,36 @@
+<!-- todo-list -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html"/>
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="todo-data.html">
+<link rel="import" href="todo-card.html">
+
+<dom-module id="todo-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 5px;
+      }
+    </style>
+
+    <todo-data tasks="{{tasks}}"></todo-data>
+
+    <template is="dom-repeat" items="{{tasks}}">
+      <a href$="/todo-detail/[[item.id]]"><todo-card item="[[item]]"></todo-card></a>
+    </template>
+  </template>
+
+  <script>
+    console.log("todo-list: script");
+    Polymer({
+      is: 'todo-list',
+
+      properties: { 
+        tasks: Array,
+      }
+    });
+  </script>
+</dom-module>

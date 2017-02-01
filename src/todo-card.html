@@ -1,0 +1,34 @@
+<!-- todo-card -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="todo-card">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 0px;
+      }
+    </style>
+
+    <div class="card">
+      <h1>[[item.id]]: [[item.name]]</h1>
+      <p>[[item.description]]</p>
+    </div>
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'todo-card',
+
+      properties: {
+        item: Object
+      }
+    });
+
+  </script>
+</dom-module>

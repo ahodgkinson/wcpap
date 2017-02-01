@@ -1,0 +1,72 @@
+{
+  "tasks": [
+    {
+      "id":1,
+      "name":"Create Todo List JSON File",
+      "description":"Create a file full of JSON data representing a Todo List",
+      "responsible":"Joe Muster",
+      "project": "todo",
+      "due_date":"2017-01-14",
+      "status":"closed"
+    },
+    {
+      "id":2,
+      "name":"Evaluate geological studies",
+      "description":"Evaluate geological studies and decide on the station retaining wall",
+      "responsible":"George Geoteksson",
+      "project": "rail",
+      "due_date":"2017-01-16",
+      "status":"open"
+    },
+    {
+      "id":3,
+      "name":"Decide on headrace tunnel alignment",
+      "description":"Plan and document the headrace tunnel alignment",
+      "responsible":"Hannes Hydrosson",
+      "project": "hydro",
+      "due_date":"2017-03-02",
+      "status":"open"
+    },
+    {
+      "id":4,
+      "name":"Build a Metro Station",
+      "description":"Build an underground metro station in the main square",
+      "responsible":"Dan Digger",
+      "project": "metro",
+      "due_date":"2017-03-02",
+      "status":"open"
+    }
+  ],
+  "projects": [
+    {
+      "id": "todo",
+      "name": "ToDo List"
+    },
+    {
+      "id": "rail",
+      "name": "Rail"
+    },
+    {
+      "id": "road",
+      "name": "Road"
+    },
+    {
+      "id": "metro",
+      "name": "Metro"
+    },
+    {
+      "id": "hydro",
+      "name": "Hydro"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "open",
+      "name": "Open"
+    },
+    {
+      "id": "closed",
+      "name": "Closed"
+    }
+  ]
+}

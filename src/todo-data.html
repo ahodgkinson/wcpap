@@ -1,0 +1,147 @@
+<!-- todo-data -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html"/>
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html"/>
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="todo-data">
+  <template>
+    <iron-localstorage name="todo-app-storage"
+      value="{{json}}"
+      on-iron-localstorage-load-empty="_getDefaultJson"
+    ></iron-localstorage>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'todo-data',
+
+      properties: {
+        json: {
+          type: Object,
+          notify: true
+        },
+        projects: {
+          type: Array,
+          computed: '_getProjects(json)',
+          notify: true
+        },
+        statuses: {
+          type: Array,
+          computed: '_getStatuses(json)',
+          notify: true
+        },
+        tasks: {
+          type: Array,
+          computed: '_getTasks(json)',
+          notify: true
+        },
+        taskId: String,
+        task: {
+          type: Object,
+          computed: '_getTask(tasks, taskId)',
+          notify: true
+        },
+        failure: {
+          type: Boolean,
+          notify: true,
+          readOnly: true
+        }
+      },
+
+      ready: function() {
+        console.log("todo-data: ready");
+      },
+
+      _getProjects: function(json) {
+        return json ? json.projects : [];
+      },
+
+      _getStatuses: function(json) {
+        return json ? json.statuses : [];
+      },
+      
+      _getTasks: function(json) {
+        return json ? json.tasks : [];
+      },
+
+      _getTask: function(tasks,taskId) {
+        console.log("todo-data._getTask: taskId: "+taskId);
+        if (taskId == "new") {
+          return this._newTask();
+        }
+        for (var i = 0, t; t = tasks[i]; ++i) {
+          if (t.id == taskId) {
+            return t;
+          }
+        }
+        console.log("todo-data._getTask: taskId: not found");
+        return this._newTask();
+      },
+
+      _newTask: function() {
+        return {
+          "id": this._newTaskId(),
+          "name":"",
+          "description":"",
+          "responsible":"",
+          "project": "todo",
+          "due_date": (new Date()).toISOString().substr(0,10),
+          "status":"open"
+        };
+      },
+
+      _newTaskId: function() { // Private, used by _newTask
+        var DIGITS = '0123456789abcdef';
+        var size=8;
+        var key="";
+        for(var i=0; i<size; i++) {
+          key += DIGITS[Math.floor(Math.random()*16)];
+        }
+        return key;
+      },
+
+      _getDefaultJson() {
+        console.log("todo-data._getDefaultJson");
+        this._fetchJson(1);
+      },
+
+      _fetchJson: function(attempts) {
+        console.log("todo-data._fetchJson");
+        this._setFailure(false);
+        if (this.json) {
+          console.log("todo-data._fetchJson: already set");
+          return;
+        }
+        this._getResource({
+          url: '/data/data.json',
+          onLoad: function(e) {
+            this.set('json', JSON.parse(e.target.responseText));
+          },
+          onError: function(e) {
+            this._setFailure(true);
+          }
+        }, attempts);
+      },
+
+      _getResource: function(rq, attempts) {
+        console.log("_getResource: rq.url: "+rq.url);
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', rq.onLoad.bind(this));
+        xhr.addEventListener('error', function(e) {
+          // Flaky connections might fail fetching resources
+          if (attempts > 1) {
+            this.debounce('_getResource', this._getResource.bind(this, rq, attempts - 1), 200);
+          } else {
+            rq.onError.call(this, e);
+          }
+        }.bind(this));
+
+        xhr.open('GET', rq.url);
+        xhr.send();
+      }
+    });
+  </script>
+</dom-module>

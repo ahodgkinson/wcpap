@@ -1,0 +1,108 @@
+<!-- record-select -->
+
+<!--
+
+  Attributes:
+
+    as-name    If present display the name for the given id
+    as-select  If present display a paper-dropdown-menu with the id selected
+
+    records = Array of JSON records,
+      record[i].id
+      record[i].name
+
+    id = String. id value for JSON record
+    name = String, name field for JSON record
+
+    label = String. Label for the field
+    field-name = String. Name of the field
+-->
+
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+
+<dom-module id="record-select">
+
+  <template>
+    <style include="shared-styles">
+      paper-dropdown-menu, paper-listbox {
+        width: 220px;
+      }
+      paper-dropdown-menu {
+        display: block;
+      }
+    </style>
+
+    <!-- Display dereferences name -->
+    <template is="dom-if" if="{{asName}}">
+      <span>[[name]]</span>
+    </template>
+
+    <!-- Display Material Design Dropdown -->
+    <template is="dom-if" if="{{asSelect}}">	<!-- TODO field name -->
+      <paper-dropdown-menu label="[[label]]">
+        <paper-listbox class="dropdown-content" selected="[[selected]]" on-tap="_tapped">
+        <template is="dom-repeat" items="[[records]]">
+          <paper-item name="[[item.id]]">[[item.name]]</paper-item>
+        </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'record-select',
+
+      properties: {
+        records: Array,
+        id: {
+          type: String,
+          notify: true
+        },
+        asName: Boolean,
+        asSelect: Boolean,
+        name: {
+          type: String,
+          computed: '_getName(id)',
+          notify: true
+        },
+        selected: {
+          type: String,
+          computed: '_getSelected(id)',
+          notify: true
+        },
+        label: String,
+        fieldName: String
+      },
+
+      _tapped: function(e) {
+        console.log("record-select._tapped: name: "+e.target.name);
+        this.id = e.target.name;
+      },
+
+      _getName: function(id) {
+        console.log("record-select._getName: id="+id+", records="+this.records.length);
+        for (var i=0; i < this.records.length; i++) {
+          if (this.records[i].id == id) {
+            console.log("record-select._getName: dereference: id="+this.records[i].id+" --> name="+this.records[i].name);
+            return this.records[i].name;
+          }
+        }
+        return "";
+      },
+
+      _getSelected: function(id) {
+        for (var i=0; i < this.records.length; i++) {
+          if (this.records[i].id == id) {
+            console.log("record-select._getName: id="+this.records[i].id+" --> selected:"+i);
+            return i;
+          }
+        }
+        return "";
+      }
+    });
+  </script>
+</dom-module>

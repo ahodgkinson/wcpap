@@ -1,0 +1,72 @@
+<!-- todo-detail -->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="shared-styles.html">
+
+<link rel="import" href="todo-data.html">
+<link rel="import" href="record-select.html">
+
+<dom-module id="todo-detail">
+
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      h2 {
+        font-size: 14px;
+        color: black;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+      p {
+        margin-top: 2px;
+      }
+
+    </style>
+
+    <app-route route="[[route]]" pattern="/:id" data="{{routeData}}"></app-route>
+
+    <todo-data
+      task-id="[[routeData.id]]" task="{{task}}"
+      projects="{{projects}}"
+      statuses="{{statuses}}"
+    ></todo-data>
+
+    <div class="card">
+      <h1>Task [[routeData.id]]</h1>
+      <h2>Name</h2>
+      <p>[[task.name]]</p>
+      <h2>Description</h2>
+      <p>[[task.description]]</p>
+      <h2>Project</h2>
+      <p><record-select as-name id="[[task.project]]" records="[[projects]]"/><p>
+      <h2>Due date</h2>
+      <p>[[task.due_date]]</p>
+      <h2>Responsible</h2>
+      <p>[[task.responsible]]</p>
+      <h2>Status</h2>
+      <p><record-select as-name id="[[task.status]]" records="[[statuses]]"/><p>
+
+      <br/>
+      <a href$="/todo-edit/[[task.id]]"><paper-button raised>Edit</paper-button></a>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'todo-detail',
+
+      properties: {
+        task: Object,
+        projects: Array,
+        statuses: Array,
+        routeData: Object
+      }
+    });
+  </script>
+</dom-module>
